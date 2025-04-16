@@ -86,7 +86,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
         </Select>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-2">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Files</CardTitle>
@@ -159,8 +159,8 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
         </Card> */}
       </div>
 
-      <Tabs defaultValue="activity">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="files">
+        <TabsList className="grid w-full grid-cols-2">
           {/* <TabsTrigger value="activity">Activity</TabsTrigger> */}
           <TabsTrigger value="files">Files</TabsTrigger>
           <TabsTrigger value="storage">Storage</TabsTrigger>
