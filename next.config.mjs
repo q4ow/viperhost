@@ -19,11 +19,11 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/uploads/:path*',
-        destination: '/api/uploads/:path*',
+        source: '/uploads/:uuid/:filename',
+        destination: '/uploads/:uuid/:filename',
       },
     ]
-  },
+  }
 }
 
 export const config = {
