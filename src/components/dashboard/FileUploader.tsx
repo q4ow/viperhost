@@ -51,32 +51,60 @@ export function FileUploader({ userId, isPro }: FileUploaderProps) {
 
     setUploading(true);
     setProgress(0);
+    const totalFiles = files.length;
+    let uploadedFiles = 0;
 
     try {
-      for (let i = 0; i < files.length; i++) {
+      for (let i = 0; i < totalFiles; i++) {
         const file = files[i];
         const formData = new FormData();
         formData.append("file", file);
         formData.append("userId", userId);
 
-        await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
 
-        setProgress(((i + 1) / files.length) * 100);
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const fileProgress = (event.loaded / event.total) * 100;
+              // (completed files + current file progress) / total files
+              const overallProgress =
+                ((uploadedFiles + fileProgress / 100) / totalFiles) * 100;
+              setProgress(overallProgress);
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              uploadedFiles++;
+              // Ensure progress hits 100% for the file segment
+              setProgress((uploadedFiles / totalFiles) * 100);
+              resolve();
+            } else {
+              reject(new Error(`Upload failed with status: ${xhr.status}`));
+            }
+          };
+
+          xhr.onerror = () => {
+            reject(new Error("Network error during upload"));
+          };
+
+          xhr.open("POST", "/api/upload", true);
+          xhr.send(formData);
+        });
       }
 
       toast({
         title: "Upload complete",
-        description: `Successfully uploaded ${files.length} file(s)`,
+        description: `Successfully uploaded ${totalFiles} file(s)`,
       });
 
       setFiles([]);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Upload error:", error);
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your files",
+        description: error.message || "There was an error uploading your files",
         variant: "destructive",
       });
     } finally {
@@ -89,9 +117,8 @@ export function FileUploader({ userId, isPro }: FileUploaderProps) {
       <CardContent className="p-6">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-            isDragActive ? "border-primary bg-primary/10" : "border-border"
-          }`}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary/10" : "border-border"
+            }`}
         >
           <input {...getInputProps()} />
           <div className="flex flex-col items-center justify-center gap-2">
