@@ -167,7 +167,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
         </TabsList>
 
         <TabsContent value="activity" className="space-y-6 pt-6">
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Upload & Download Activity</CardTitle>
               <CardDescription>
@@ -217,7 +217,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                 </ChartContainer>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {isPro && (
             <Card>
