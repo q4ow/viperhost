@@ -2,147 +2,148 @@
 
 import { useState } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Download,
-  FileIcon,
-  ImageIcon,
-  Film,
-  FileAudio,
-  FileText,
+    Download,
+    FileIcon,
+    ImageIcon,
+    Film,
+    FileAudio,
+    FileText,
 } from "lucide-react";
 import { formatBytes } from "@/lib/utils";
 import Image from "next/image";
 
 interface FilePreviewProps {
-  file: {
-    id: string;
-    name: string;
-    size: number;
-    type: string;
-    url: string;
-  };
-  shareId: string;
+    file: {
+        id: string;
+        name: string;
+        size: number;
+        type: string;
+        url: string;
+        rawUrl: string;
+    };
+    shareId: string;
 }
 
 export function FilePreview({ file, shareId }: FilePreviewProps) {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const { toast } = useToast();
+    const [isDownloading, setIsDownloading] = useState(false);
+    const { toast } = useToast();
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
+    const handleDownload = async () => {
+        setIsDownloading(true);
 
-    try {
-      await fetch(`/api/share/${shareId}/download`, {
-        method: "POST",
-      });
+        try {
+            await fetch(`/api/share/${shareId}/download`, {
+                method: "POST",
+            });
 
-      window.open(file.url, "_blank");
+            window.open(file.rawUrl, "_blank");
 
-      toast({
-        title: "Download started",
-        description: "Your file download has started",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to download file",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+            toast({
+                title: "Download started",
+                description: "Your file download has started",
+            });
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to download file",
+                variant: "destructive",
+            });
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
-  const renderPreview = () => {
-    if (file.type.startsWith("image/")) {
-      return (
-        <div className="flex justify-center p-4">
-          <Image
-            src={file.url || "/placeholder.svg"}
-            alt={file.name}
-            className="max-h-[400px] max-w-full rounded-lg object-contain"
-          />
-        </div>
-      );
-    }
+    const renderPreview = () => {
+        if (file.type.startsWith("image/")) {
+            return (
+                <div className="flex justify-center p-4">
+                    <Image
+                        src={file.rawUrl || "/placeholder.svg"}
+                        alt={file.name}
+                        className="max-h-[400px] max-w-full rounded-lg object-contain"
+                    />
+                </div>
+            );
+        }
 
-    if (file.type.startsWith("video/")) {
-      return (
-        <div className="p-4">
-          <video
-            src={file.url}
-            controls
-            className="max-h-[400px] w-full rounded-lg"
-          />
-        </div>
-      );
-    }
+        if (file.type.startsWith("video/")) {
+            return (
+                <div className="p-4">
+                    <video
+                        src={file.url}
+                        controls
+                        className="max-h-[400px] w-full rounded-lg"
+                    />
+                </div>
+            );
+        }
 
-    if (file.type.startsWith("audio/")) {
-      return (
-        <div className="p-4">
-          <audio src={file.url} controls className="w-full" />
-        </div>
-      );
-    }
+        if (file.type.startsWith("audio/")) {
+            return (
+                <div className="p-4">
+                    <audio src={file.url} controls className="w-full" />
+                </div>
+            );
+        }
 
-    if (file.type === "application/pdf") {
-      return (
-        <div className="flex h-[400px] items-center justify-center p-4">
-          <iframe src={file.url} className="h-full w-full rounded-lg" />
-        </div>
-      );
-    }
+        if (file.type === "application/pdf") {
+            return (
+                <div className="flex h-[400px] items-center justify-center p-4">
+                    <iframe src={file.url} className="h-full w-full rounded-lg" />
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex flex-col items-center justify-center p-8">
+                {file.type.startsWith("image/") ? (
+                    <ImageIcon className="h-24 w-24 text-muted-foreground" />
+                ) : file.type.startsWith("video/") ? (
+                    <Film className="h-24 w-24 text-muted-foreground" />
+                ) : file.type.startsWith("audio/") ? (
+                    <FileAudio className="h-24 w-24 text-muted-foreground" />
+                ) : file.type === "application/pdf" || file.type.includes("text") ? (
+                    <FileText className="h-24 w-24 text-muted-foreground" />
+                ) : (
+                    <FileIcon className="h-24 w-24 text-muted-foreground" />
+                )}
+                <p className="mt-4 text-center text-muted-foreground">
+                    Preview not available for this file type
+                </p>
+            </div>
+        );
+    };
 
     return (
-      <div className="flex flex-col items-center justify-center p-8">
-        {file.type.startsWith("image/") ? (
-          <ImageIcon className="h-24 w-24 text-muted-foreground" />
-        ) : file.type.startsWith("video/") ? (
-          <Film className="h-24 w-24 text-muted-foreground" />
-        ) : file.type.startsWith("audio/") ? (
-          <FileAudio className="h-24 w-24 text-muted-foreground" />
-        ) : file.type === "application/pdf" || file.type.includes("text") ? (
-          <FileText className="h-24 w-24 text-muted-foreground" />
-        ) : (
-          <FileIcon className="h-24 w-24 text-muted-foreground" />
-        )}
-        <p className="mt-4 text-center text-muted-foreground">
-          Preview not available for this file type
-        </p>
-      </div>
+        <div className="container py-10">
+            <Card className="mx-auto max-w-3xl">
+                <CardHeader>
+                    <CardTitle>{file.name}</CardTitle>
+                    <CardDescription>
+                        {formatBytes(file.size)} • {file.type}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>{renderPreview()}</CardContent>
+                <CardFooter className="flex justify-between">
+                    <div className="text-sm text-muted-foreground">
+                        Shared via ViperHost
+                    </div>
+                    <Button onClick={handleDownload} disabled={isDownloading}>
+                        <Download className="mr-2 h-4 w-4" />
+                        {isDownloading ? "Downloading..." : "Download"}
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
     );
-  };
-
-  return (
-    <div className="container py-10">
-      <Card className="mx-auto max-w-3xl">
-        <CardHeader>
-          <CardTitle>{file.name}</CardTitle>
-          <CardDescription>
-            {formatBytes(file.size)} • {file.type}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>{renderPreview()}</CardContent>
-        <CardFooter className="flex justify-between">
-          <div className="text-sm text-muted-foreground">
-            Shared via ViperHost
-          </div>
-          <Button onClick={handleDownload} disabled={isDownloading}>
-            <Download className="mr-2 h-4 w-4" />
-            {isDownloading ? "Downloading..." : "Download"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
 }
