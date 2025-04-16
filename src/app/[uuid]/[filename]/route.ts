@@ -11,20 +11,28 @@ export async function GET(
     try {
         const { uuid, filename } = params;
 
+        const file = await db.file.findFirst({
+            where: {
+                AND: [
+                    { rawUrl: filename },
+                    { fileId: uuid }
+                ]
+            },
+            include: { user: true },
+        });
+
+        if (!file) {
+            return NextResponse.json({ error: "Not found" }, { status: 404 });
+        }
+
         const shareLink = await db.shareLink.findFirst({
             where: {
-                file: {
-                    fileId: filename.split(".")[0],
-                },
+                fileId: file.id,
             },
             include: {
-                file: true,
                 user: true,
             },
         });
-
-        let file;
-        let user;
 
         if (shareLink) {
             if (shareLink.expiresAt && shareLink.expiresAt < new Date()) {
@@ -34,24 +42,10 @@ export async function GET(
                 );
             }
 
-            file = shareLink.file;
-            user = shareLink.user;
-
             await db.shareLink.update({
                 where: { id: shareLink.id },
                 data: { views: { increment: 1 } },
             });
-        } else {
-            file = await db.file.findFirst({
-                where: { fileId: filename.split(".")[0] },
-                include: { user: true },
-            });
-
-            if (!file) {
-                return NextResponse.json({ error: "Not found" }, { status: 404 });
-            }
-
-            user = file.user;
         }
 
         const filePath = path.join(
@@ -114,7 +108,7 @@ export async function GET(
         logger.info(`File accessed: ${filename}`, {
             filename: file.name,
             size: stats.size,
-            userId: user.id,
+            userId: file.user.id,
             fileId: file.id,
             shareId: shareLink?.id,
         });

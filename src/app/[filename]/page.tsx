@@ -13,11 +13,9 @@ interface FilePageProps {
 export async function generateMetadata({
   params,
 }: FilePageProps): Promise<Metadata> {
-  const fileId = params.filename.split(".")[0];
-
   const file = await db.file.findFirst({
     where: {
-      fileId,
+      rawUrl: params.filename,
     },
     include: {
       user: true,
@@ -68,11 +66,9 @@ export async function generateMetadata({
 }
 
 export default async function FilePage({ params }: FilePageProps) {
-  const fileId = params.filename.split(".")[0];
-
   const file = await db.file.findFirst({
     where: {
-      fileId,
+      rawUrl: params.filename,
     },
   });
 
