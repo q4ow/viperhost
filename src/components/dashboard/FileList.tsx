@@ -103,6 +103,12 @@ export function FileList({ files, isPro = false }: FileListProps) {
     return "📁";
   };
 
+  const downloadFile = (url: string) => {
+    const downloadUrl = new URL(url);
+    downloadUrl.searchParams.set('download', 'true');
+    window.open(downloadUrl.toString(), '_blank');
+  };
+
   return (
     <>
       <Card>
@@ -179,7 +185,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
                           Copy Link
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => window.open(file.url, "_blank")}
+                          onClick={() => downloadFile(file.url)}
                         >
                           <Download className="mr-2 h-4 w-4" />
                           Download

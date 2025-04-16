@@ -7,6 +7,8 @@ import { db } from "@/lib/db"
 export async function GET(req: Request, { params }: { params: { filename: string } }) {
     try {
         const { filename } = params
+        const { searchParams } = new URL(req.url)
+        const isDownload = searchParams.get('download') === 'true'
 
         const shareLink = await db.shareLink.findFirst({
             where: {
@@ -33,7 +35,10 @@ export async function GET(req: Request, { params }: { params: { filename: string
 
             await db.shareLink.update({
                 where: { id: shareLink.id },
-                data: { views: { increment: 1 } }
+                data: {
+                    views: { increment: isDownload ? 0 : 1 },
+                    downloads: { increment: isDownload ? 1 : 0 }
+                }
             })
         } else {
             file = await db.file.findFirst({
@@ -46,6 +51,26 @@ export async function GET(req: Request, { params }: { params: { filename: string
             }
 
             user = file.user
+
+            const activeShareLink = await db.shareLink.findFirst({
+                where: {
+                    fileId: file.id,
+                    OR: [
+                        { expiresAt: null },
+                        { expiresAt: { gt: new Date() } }
+                    ]
+                }
+            })
+
+            if (activeShareLink) {
+                await db.shareLink.update({
+                    where: { id: activeShareLink.id },
+                    data: {
+                        views: { increment: isDownload ? 0 : 1 },
+                        downloads: { increment: isDownload ? 1 : 0 }
+                    }
+                })
+            }
         }
 
         const filePath = path.join(process.cwd(), "uploads", user.uuid, `${file.fileId}${path.extname(file.name)}`)
@@ -100,19 +125,20 @@ export async function GET(req: Request, { params }: { params: { filename: string
                 break
         }
 
-        logger.info(`File accessed: ${filename}`, {
+        logger.info(`File ${isDownload ? 'downloaded' : 'viewed'}: ${filename}`, {
             filename: file.name,
             size: stats.size,
             userId: user.id,
             fileId: file.id,
-            shareId: shareLink?.id
+            shareId: shareLink?.id,
+            isDownload
         })
 
         return new NextResponse(fileBuffer, {
             headers: {
                 "Content-Type": contentType,
                 "Content-Length": stats.size.toString(),
-                "Content-Disposition": `inline; filename="${file.name}"`,
+                "Content-Disposition": `${isDownload ? 'attachment' : 'inline'}; filename="${file.name}"`,
             },
         })
     } catch (error) {
