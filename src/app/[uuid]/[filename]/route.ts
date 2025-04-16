@@ -8,24 +8,47 @@ export async function GET(req: Request, { params }: { params: { uuid: string; fi
   try {
     const { uuid, filename } = params
 
-    const user = await db.user.findUnique({
-      where: { uuid },
+    const shareLink = await db.shareLink.findUnique({
+      where: { shareId: uuid },
       include: {
-        files: true,
+        file: true,
+        user: true,
       },
     })
 
-    if (!user) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    let file;
+    let user;
+
+    if (shareLink) {
+      if (shareLink.expiresAt && shareLink.expiresAt < new Date()) {
+        return NextResponse.json({ error: "Share link has expired" }, { status: 410 })
+      }
+
+      file = shareLink.file
+      user = shareLink.user
+
+      await db.shareLink.update({
+        where: { id: shareLink.id },
+        data: { views: { increment: 1 } }
+      })
+    } else {
+      user = await db.user.findUnique({
+        where: { uuid },
+        include: {
+          files: {
+            where: { fileId: filename }
+          }
+        },
+      })
+
+      if (!user || user.files.length === 0) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 })
+      }
+
+      file = user.files[0]
     }
 
-    const file = user.files.find(f => f.fileId === filename)
-
-    if (!file) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 })
-    }
-
-    const filePath = path.join(process.cwd(), "uploads", uuid, filename)
+    const filePath = path.join(process.cwd(), "uploads", user.uuid, file.fileId)
 
     if (!fs.existsSync(filePath)) {
       return NextResponse.json({ error: "File not found" }, { status: 404 })
@@ -80,10 +103,11 @@ export async function GET(req: Request, { params }: { params: { uuid: string; fi
 
     logger.info(`File accessed: ${filename}`, {
       uuid,
-      filename,
+      filename: file.name,
       size: stats.size,
       userId: user.id,
-      fileId: file.id
+      fileId: file.id,
+      shareId: shareLink?.id
     })
 
     return new NextResponse(fileBuffer, {
