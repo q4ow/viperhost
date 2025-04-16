@@ -22,6 +22,9 @@ export async function generateMetadata({
     },
   });
 
+  console.log("File metadata:", file);
+  console.log("File ID:", params.filename.split(".")[0]);
+
   if (!file) {
     return {
       title: "File Not Found",
