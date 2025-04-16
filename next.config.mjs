@@ -19,7 +19,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/uploads/:uuid/:filename',
+        source: '/:uuid/:filename',
         destination: '/uploads/:uuid/:filename',
       },
     ]
