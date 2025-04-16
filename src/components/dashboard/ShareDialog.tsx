@@ -23,6 +23,7 @@ interface ShareDialogProps {
   fileId: string;
   fileName: string;
   fileUrl: string;
+  rawUrl: string;
   isPro: boolean;
 }
 
@@ -32,6 +33,7 @@ export function ShareDialog({
   fileId,
   fileName,
   fileUrl,
+  rawUrl,
   isPro,
 }: ShareDialogProps) {
   const [copied, setCopied] = useState(false);
@@ -109,15 +111,63 @@ export function ShareDialog({
           </TabsList>
 
           <TabsContent value="link" className="space-y-4 py-4">
-            <div className="flex items-center space-x-2">
-              <Input value={fileUrl} readOnly className="flex-1" />
-              <Button size="icon" onClick={copyToClipboard}>
-                {copied ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
+            <div>
+              <Label htmlFor="direct-link">Direct Link</Label>
+              <div className="flex items-center space-x-2 mt-1">
+                <Input
+                  id="direct-link"
+                  value={fileUrl}
+                  readOnly
+                  className="flex-1"
+                />
+                <Button
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(fileUrl);
+                    setCopied(true);
+                    toast({
+                      title: "Link copied",
+                      description: "Direct link copied to clipboard",
+                    });
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="raw-link">Raw Link</Label>
+              <div className="flex items-center space-x-2 mt-1">
+                <Input
+                  id="raw-link"
+                  value={rawUrl}
+                  readOnly
+                  className="flex-1"
+                />
+                <Button
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(rawUrl);
+                    setCopied(true);
+                    toast({
+                      title: "Link copied",
+                      description: "Raw link copied to clipboard",
+                    });
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
 
             {!isPro && (

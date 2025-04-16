@@ -35,6 +35,7 @@ interface FileData {
   size: number;
   type: string;
   url: string;
+  rawUrl: string;
   createdAt: Date;
   userId: string;
   fileId: string;
@@ -204,6 +205,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
           fileId={selectedFile.id}
           fileName={selectedFile.name}
           fileUrl={selectedFile.url}
+          rawUrl={selectedFile.rawUrl}
           isPro={isPro}
         />
       )}

@@ -66,6 +66,7 @@ model File {
   size      Int
   type      String
   url       String
+  rawUrl    String
   fileId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -41,10 +41,21 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const filePath = path.join(process.cwd(), file.url);
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    const filePath = path.join(uploadsDir, file.url);
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        logger.info(`File deleted from filesystem: ${filePath}`);
+      } else {
+        logger.warn(`File not found on filesystem: ${filePath}`);
+      }
+    } catch (fsError) {
+      logger.error("Error deleting file from filesystem", {
+        error: fsError,
+        filePath,
+      });
     }
 
     await db.file.delete({
@@ -53,7 +64,7 @@ export async function DELETE(
       },
     });
 
-    logger.info(`File deleted: ${fileId}`, {
+    logger.info(`File record deleted from database: ${fileId}`, {
       userId: session.user.id,
       fileUrl: file.url,
     });

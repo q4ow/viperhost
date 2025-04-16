@@ -60,7 +60,8 @@ export async function POST(req: Request) {
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await saveFile(filePath, fileBuffer);
 
-    const fileUrl = `${process.env.NEXTAUTH_URL}/uploads/${user.uuid}/${filename}`;
+    const fileUrl = `${process.env.NEXTAUTH_URL}/${filename}`;
+    const rawUrl = `${process.env.NEXTAUTH_URL}/${user.uuid}/${filename}`;
 
     const fileData = await db.file.create({
       data: {
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
         size: file.size,
         type: file.type,
         url: fileUrl,
+        rawUrl: rawUrl,
         fileId,
         userId,
       },
