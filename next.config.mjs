@@ -15,21 +15,7 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/:uuid/:filename',
-        destination: '/uploads/:uuid/:filename',
-      },
-    ]
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
 }
 
 export default nextConfig
