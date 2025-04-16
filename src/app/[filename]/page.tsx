@@ -69,9 +69,10 @@ export async function generateMetadata({
 }
 
 export default async function FilePage({ params }: FilePageProps) {
+  const fileId = params.filename.split(".")[0];
   const file = await db.file.findFirst({
     where: {
-      rawUrl: params.filename,
+      fileId: fileId,
     },
   });
 
