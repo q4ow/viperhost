@@ -219,7 +219,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
             </CardContent>
           </Card> */}
 
-          {isPro && (
+          {/* {isPro && (
             <Card>
               <CardHeader>
                 <CardTitle>Popular Files</CardTitle>
@@ -258,7 +258,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                 </div>
               </CardContent>
             </Card>
-          )}
+          )} */}
         </TabsContent>
 
         <TabsContent value="files" className="space-y-6 pt-6">
