@@ -15,7 +15,7 @@ export async function generateMetadata({
 }: FilePageProps): Promise<Metadata> {
   const file = await db.file.findFirst({
     where: {
-      fileId: params.filename,
+      fileId: params.filename.split(".")[0],
     },
     include: {
       user: true,
