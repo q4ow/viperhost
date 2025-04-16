@@ -15,7 +15,7 @@ export async function generateMetadata({
 }: FilePageProps): Promise<Metadata> {
   const file = await db.file.findFirst({
     where: {
-      rawUrl: params.filename,
+      url: params.filename,
     },
     include: {
       user: true,
@@ -41,21 +41,21 @@ export async function generateMetadata({
       type: "website",
       images: file.type.startsWith("image/")
         ? [
-            {
-              url: file.url,
-              width: 1200,
-              height: 630,
-              alt: file.name,
-            },
-          ]
+          {
+            url: file.url,
+            width: 1200,
+            height: 630,
+            alt: file.name,
+          },
+        ]
         : [
-            {
-              url: "/placeholder.svg",
-              width: 1200,
-              height: 630,
-              alt: "File preview",
-            },
-          ],
+          {
+            url: "/placeholder.svg",
+            width: 1200,
+            height: 630,
+            alt: "File preview",
+          },
+        ],
     },
     twitter: {
       card: file.type.startsWith("image/") ? "summary_large_image" : "summary",
