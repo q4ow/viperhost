@@ -22,9 +22,6 @@ export async function generateMetadata({
     },
   });
 
-  console.log("File metadata:", file);
-  console.log("File ID:", params.filename.split(".")[0]);
-
   if (!file) {
     return {
       title: "File Not Found",
@@ -45,7 +42,7 @@ export async function generateMetadata({
       images: file.type.startsWith("image/")
         ? [
           {
-            url: file.url,
+            url: file.rawUrl,
             width: 1200,
             height: 630,
             alt: file.name,
@@ -81,7 +78,7 @@ export default async function FilePage({ params }: FilePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background mt-[30vh]">
       <FilePreview file={file} shareId={""} />
     </div>
   );
