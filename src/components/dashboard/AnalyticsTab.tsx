@@ -118,7 +118,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Views</CardTitle>
           </CardHeader>
@@ -156,18 +156,18 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                   : "period"}
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <Tabs defaultValue="activity">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+          {/* <TabsTrigger value="activity">Activity</TabsTrigger> */}
           <TabsTrigger value="files">Files</TabsTrigger>
           <TabsTrigger value="storage">Storage</TabsTrigger>
         </TabsList>
 
         <TabsContent value="activity" className="space-y-6 pt-6">
-          {/* <Card>
+          <Card>
             <CardHeader>
               <CardTitle>Upload & Download Activity</CardTitle>
               <CardDescription>
@@ -217,9 +217,9 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                 </ChartContainer>
               </div>
             </CardContent>
-          </Card> */}
+          </Card>
 
-          {/* {isPro && (
+          {isPro && (
             <Card>
               <CardHeader>
                 <CardTitle>Popular Files</CardTitle>
@@ -258,7 +258,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                 </div>
               </CardContent>
             </Card>
-          )} */}
+          )}
         </TabsContent>
 
         <TabsContent value="files" className="space-y-6 pt-6">
