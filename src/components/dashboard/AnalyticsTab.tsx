@@ -127,7 +127,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
               {data.popularFiles.reduce((sum, file) => sum + file.views, 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              +{Math.floor(Math.random() * 15)}% from last{" "}
+              Compared to previous{" "}
               {timeRange === "7d"
                 ? "week"
                 : timeRange === "30d"
@@ -148,7 +148,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
               {data.popularFiles.reduce((sum, file) => sum + file.downloads, 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              +{Math.floor(Math.random() * 12)}% from last{" "}
+              Compared to previous{" "}
               {timeRange === "7d"
                 ? "week"
                 : timeRange === "30d"
