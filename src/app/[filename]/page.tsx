@@ -78,7 +78,7 @@ export default async function FilePage({ params }: FilePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background my-auto">
+    <div className="min-h-screen bg-background flex items-center justify-center">
       <FilePreview file={file} shareId={""} />
     </div>
   );
