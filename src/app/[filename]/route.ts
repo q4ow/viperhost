@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: { filename: string
         const shareLink = await db.shareLink.findFirst({
             where: {
                 file: {
-                    fileId: filename
+                    fileId: filename.split('.')[0] // Extract fileId without extension
                 }
             },
             include: {
@@ -37,7 +37,7 @@ export async function GET(req: Request, { params }: { params: { filename: string
             })
         } else {
             file = await db.file.findFirst({
-                where: { fileId: filename },
+                where: { fileId: filename.split('.')[0] }, // Extract fileId without extension
                 include: { user: true }
             })
 
@@ -48,7 +48,7 @@ export async function GET(req: Request, { params }: { params: { filename: string
             user = file.user
         }
 
-        const filePath = path.join(process.cwd(), "uploads", user.uuid, file.fileId)
+        const filePath = path.join(process.cwd(), "uploads", user.uuid, `${file.fileId}${path.extname(file.name)}`)
 
         if (!fs.existsSync(filePath)) {
             return NextResponse.json({ error: "File not found" }, { status: 404 })
