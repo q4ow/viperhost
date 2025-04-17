@@ -42,8 +42,9 @@ export async function DELETE(
     }
 
     const uploadsDir = path.join(process.cwd(), "uploads");
-    const fileDir = path.join(uploadsDir, file.fileId);
-    const filePath = path.join(fileDir, file.name);
+    const ext = path.extname(file.name);
+    const fileDir = path.join(uploadsDir, file.userId);
+    const filePath = path.join(fileDir, file.fileId + ext);
     console.log(`Absolute file path: ${filePath}`);
 
     try {
