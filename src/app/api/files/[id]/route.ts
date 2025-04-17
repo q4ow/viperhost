@@ -44,18 +44,18 @@ export async function DELETE(
     const uploadsDir = path.join(process.cwd(), "uploads");
     // uploads/{user.uuid}/{file.fileId}/{file.name}
     const userDir = path.join(uploadsDir, file.user.uuid);
-    const fileDir = path.join(userDir, file.fileId);
-    const filePath = path.join(fileDir, file.name);
+    const filePath = path.join(file.fileId + path.extname(file.name));
+
     logger.info(`Deleting file: ${filePath}`);
 
     try {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         logger.info(`File deleted from filesystem: ${filePath}`);
-        const filesLeft = fs.readdirSync(fileDir);
+        const filesLeft = fs.readdirSync(userDir);
         if (filesLeft.length === 0) {
-          fs.rmdirSync(fileDir);
-          logger.info(`Directory deleted: ${fileDir}`);
+          fs.rmdirSync(userDir);
+          logger.info(`Directory deleted: ${userDir}`);
         }
         const userDirsLeft = fs.readdirSync(userDir);
         if (userDirsLeft.length === 0) {
