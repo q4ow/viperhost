@@ -80,7 +80,7 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
             return (
                 <div className="p-4">
                     <video
-                        src={file.url}
+                        src={file.rawUrl}
                         controls
                         className="max-h-[400px] w-full rounded-lg"
                     />
@@ -91,7 +91,7 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
         if (file.type.startsWith("audio/")) {
             return (
                 <div className="p-4">
-                    <audio src={file.url} controls className="w-full" />
+                    <audio src={file.rawUrl} controls className="w-full" />
                 </div>
             );
         }
@@ -99,7 +99,7 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
         if (file.type === "application/pdf") {
             return (
                 <div className="flex h-[400px] items-center justify-center p-4">
-                    <iframe src={file.url} className="h-full w-full rounded-lg" />
+                    <iframe src={file.rawUrl} className="h-full w-full rounded-lg" />
                 </div>
             );
         }

@@ -113,7 +113,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
     if (file.type.startsWith("image/")) {
       return (
         <img
-          src={file.url}
+          src={file.rawUrl}
           alt={file.name}
           className="h-12 w-12 object-cover rounded"
         />
@@ -131,7 +131,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
     if (file.type.startsWith("audio/")) {
       return (
         <audio controls className="h-12 w-12">
-          <source src={file.url} type={file.type} />
+          <source src={file.rawUrl} type={file.type} />
         </audio>
       );
     }

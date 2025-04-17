@@ -42,7 +42,8 @@ export async function DELETE(
     }
 
     const uploadsDir = path.join(process.cwd(), "uploads");
-    const filePath = path.join(uploadsDir, file.url);
+    const ext = path.extname(file.name || "");
+    const filePath = path.join(uploadsDir, file.fileId + ext);
 
     try {
       if (fs.existsSync(filePath)) {
@@ -66,7 +67,7 @@ export async function DELETE(
 
     logger.info(`File record deleted from database: ${fileId}`, {
       userId: session.user.id,
-      fileUrl: file.url,
+      fileUrl: file.rawUrl,
     });
 
     return NextResponse.json(
