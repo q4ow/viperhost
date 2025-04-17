@@ -44,6 +44,7 @@ export async function DELETE(
     const uploadsDir = path.join(process.cwd(), "uploads");
     const fileDir = path.join(uploadsDir, file.fileId);
     const filePath = path.join(fileDir, file.name);
+    console.log(`Absolute file path: ${filePath}`);
 
     try {
       if (fs.existsSync(filePath)) {
