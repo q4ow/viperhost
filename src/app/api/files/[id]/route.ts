@@ -46,8 +46,6 @@ export async function DELETE(
     const userDir = path.join(uploadsDir, file.user.uuid);
     const filePath = path.join(userDir, file.fileId + path.extname(file.name));
 
-    logger.info(`Deleting file: ${filePath}`);
-
     try {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
