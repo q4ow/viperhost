@@ -22,33 +22,33 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    async function fetchFiles() {
+    async function fetchUserAndFiles() {
       setLoading(true);
-      const res = await fetch("/api/files/me");
-      if (res.ok) {
-        const data = await res.json();
+      const userRes = await fetch("/api/user/me");
+      let userData = null;
+      if (userRes.ok) {
+        userData = await userRes.json();
+        setUser(userData);
+      }
+      const filesRes = await fetch("/api/files/me");
+      if (filesRes.ok) {
+        const data = await filesRes.json();
         setFiles(data.files);
         setIsPro(data.isPro);
-        if (data.files.length > 0) {
-          setUser(data.files[0].user || null);
-        }
       }
       setLoading(false);
     }
-    fetchFiles();
+    fetchUserAndFiles();
   }, []);
 
   const handleUploadComplete = () => {
     (async () => {
       setLoading(true);
-      const res = await fetch("/api/files/me");
-      if (res.ok) {
-        const data = await res.json();
+      const filesRes = await fetch("/api/files/me");
+      if (filesRes.ok) {
+        const data = await filesRes.json();
         setFiles(data.files);
         setIsPro(data.isPro);
-        if (data.files.length > 0) {
-          setUser(data.files[0].user || null);
-        }
       }
       setLoading(false);
     })();

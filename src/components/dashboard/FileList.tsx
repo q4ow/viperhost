@@ -122,7 +122,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
     if (file.type.startsWith("video/")) {
       return (
         <video
-          src={file.url}
+          src={file.rawUrl}
           controls
           className="h-12 w-12 object-cover rounded"
         />
