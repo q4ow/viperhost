@@ -42,10 +42,10 @@ export async function DELETE(
     }
 
     const uploadsDir = path.join(process.cwd(), "uploads");
-    const ext = path.extname(file.name);
-    const fileDir = path.join(uploadsDir, file.userId);
-    const filePath = path.join(fileDir, file.fileId + ext);
-    console.log(`Absolute file path: ${filePath}`);
+    // uploads/{user.uuid}/{file.fileId}/{file.name}
+    const userDir = path.join(uploadsDir, file.user.uuid);
+    const fileDir = path.join(userDir, file.fileId);
+    const filePath = path.join(fileDir, file.name);
 
     try {
       if (fs.existsSync(filePath)) {
@@ -55,6 +55,11 @@ export async function DELETE(
         if (filesLeft.length === 0) {
           fs.rmdirSync(fileDir);
           logger.info(`Directory deleted: ${fileDir}`);
+        }
+        const userDirsLeft = fs.readdirSync(userDir);
+        if (userDirsLeft.length === 0) {
+          fs.rmdirSync(userDir);
+          logger.info(`User directory deleted: ${userDir}`);
         }
       } else {
         logger.warn(`File not found on filesystem: ${filePath}`);
