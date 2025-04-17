@@ -44,7 +44,7 @@ export async function DELETE(
     const uploadsDir = path.join(process.cwd(), "uploads");
     // uploads/{user.uuid}/{file.fileId}/{file.name}
     const userDir = path.join(uploadsDir, file.user.uuid);
-    const filePath = path.join(file.fileId + path.extname(file.name));
+    const filePath = path.join(userDir, file.fileId + path.extname(file.name));
 
     logger.info(`Deleting file: ${filePath}`);
 
