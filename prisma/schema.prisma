@@ -78,7 +78,7 @@ model File {
 model Subscription {
   id                   String    @id @default(cuid())
   userId               String    @unique
-  status               String    @default("inactive") // active, inactive, canceled
+  status               String    @default("inactive")
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripePriceId        String?

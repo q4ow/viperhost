@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 
 import { useState } from "react";
 import {
@@ -41,7 +41,22 @@ export function SettingsTab({ user, isPro }: SettingsTabProps) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleAvatarButtonClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleProfileUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,21 +66,33 @@ export function SettingsTab({ user, isPro }: SettingsTabProps) {
     const name = formData.get("name") as string;
     const username = formData.get("username") as string;
 
-    try {
-      const response = await fetch("/api/user/profile", {
+    let response;
+    if (avatarFile) {
+      const uploadData = new FormData();
+      uploadData.append("name", name);
+      uploadData.append("username", username);
+      uploadData.append("avatar", avatarFile);
+      response = await fetch("/api/user/profile", {
+        method: "PUT",
+        body: uploadData,
+      });
+    } else {
+      response = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, username }),
       });
+    }
 
+    try {
       if (!response.ok) throw new Error("Failed to update profile");
-
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
+      setAvatarFile(null);
     } catch (error) {
       toast({
         title: "Error",
@@ -179,7 +206,7 @@ export function SettingsTab({ user, isPro }: SettingsTabProps) {
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-20 w-20">
                     <AvatarImage
-                      src={user.image || undefined}
+                      src={avatarPreview || user.image || undefined}
                       alt={user.name}
                     />
                     <AvatarFallback>
@@ -187,9 +214,16 @@ export function SettingsTab({ user, isPro }: SettingsTabProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <Button type="button" variant="outline" size="sm">
+                    <Button type="button" variant="outline" size="sm" onClick={handleAvatarButtonClick}>
                       Change Avatar
                     </Button>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      onChange={handleAvatarChange}
+                    />
                     <p className="mt-2 text-xs text-muted-foreground">
                       JPG, GIF or PNG. Max size 2MB.
                     </p>

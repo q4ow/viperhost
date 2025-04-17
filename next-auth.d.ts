@@ -1,4 +1,3 @@
-// Extend NextAuth session type to include user id
 import { DefaultSession } from "next-auth"
 
 declare module "next-auth" {
