@@ -9,6 +9,7 @@ import { FileList } from "@/components/dashboard/FileList";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
 import { db } from "@/lib/db";
+import { useEffect, useState } from "react";
 
 interface FileType {
   name: string;
@@ -17,44 +18,47 @@ interface FileType {
   createdAt: Date;
 }
 
-export default async function DashboardPage() {
-  const session = (await getServerSession(
-    authOptions,
-  )) as ExtendedSession | null;
+export default function DashboardPage() {
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isPro, setIsPro] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
-  if (!session) {
-    redirect("/auth/login");
-  }
+  useEffect(() => {
+    async function fetchFiles() {
+      setLoading(true);
+      const res = await fetch("/api/files/me");
+      if (res.ok) {
+        const data = await res.json();
+        setFiles(data.files);
+        setIsPro(data.isPro);
+        if (data.files.length > 0) {
+          setUser(data.files[0].user || null);
+        }
+      }
+      setLoading(false);
+    }
+    fetchFiles();
+  }, []);
 
-  const files = await db.file.findMany({
-    where: {
-      userId: session.user.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  const subscription = await db.subscription.findFirst({
-    where: {
-      userId: session.user.id,
-    },
-  });
-
-  const isPro = subscription?.status === "active";
-
-  const user = await db.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-  });
-
-  if (!user) {
-    redirect("/auth/login");
-  }
+  const handleUploadComplete = () => {
+    (async () => {
+      setLoading(true);
+      const res = await fetch("/api/files/me");
+      if (res.ok) {
+        const data = await res.json();
+        setFiles(data.files);
+        setIsPro(data.isPro);
+        if (data.files.length > 0) {
+          setUser(data.files[0].user || null);
+        }
+      }
+      setLoading(false);
+    })();
+  };
 
   const storageUsed: number = files.reduce(
-    (total: number, file: FileType) => total + file.size,
+    (total: number, file: any) => total + file.size,
     0,
   );
 
@@ -82,22 +86,21 @@ export default async function DashboardPage() {
         <SubscriptionStatus isPro={isPro} />
         <DashboardTabs
           analyticsData={analyticsData}
-          user={{
-            ...user,
-            name: user.name ?? undefined,
-            email: user.email ?? undefined,
-            image: user.image ?? undefined,
-            username: user.name ?? "",
-          }}
+          user={user || { id: '', username: '', createdAt: new Date() }}
           isPro={isPro}
         >
-          <FileUploader userId={session.user.id} isPro={isPro} />
-          <FileList files={files} />
+          <FileUploader userId={user?.id || ""} isPro={isPro} onUploadComplete={handleUploadComplete} />
+          {loading ? (
+            <div>Loading files...</div>
+          ) : (
+            <FileList files={files} isPro={isPro} />
+          )}
         </DashboardTabs>
       </div>
     </DashboardShell>
   );
 }
+
 function generateFileTypeDistribution(files: FileType[]) {
   const typeCount: Record<string, number> = {};
 

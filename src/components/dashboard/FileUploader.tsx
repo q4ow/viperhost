@@ -11,9 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 interface FileUploaderProps {
   userId: string;
   isPro: boolean;
+  onUploadComplete?: () => void;
 }
 
-export function FileUploader({ userId, isPro }: FileUploaderProps) {
+export function FileUploader({ userId, isPro, onUploadComplete }: FileUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -100,6 +101,7 @@ export function FileUploader({ userId, isPro }: FileUploaderProps) {
       });
 
       setFiles([]);
+      if (onUploadComplete) onUploadComplete();
     } catch (error: any) {
       console.error("Upload error:", error);
       toast({

@@ -109,6 +109,35 @@ export function FileList({ files, isPro = false }: FileListProps) {
     window.open(downloadUrl.toString(), '_blank');
   };
 
+  const renderFilePreview = (file: FileData) => {
+    if (file.type.startsWith("image/")) {
+      return (
+        <img
+          src={file.url}
+          alt={file.name}
+          className="h-12 w-12 object-cover rounded"
+        />
+      );
+    }
+    if (file.type.startsWith("video/")) {
+      return (
+        <video
+          src={file.url}
+          controls
+          className="h-12 w-12 object-cover rounded"
+        />
+      );
+    }
+    if (file.type.startsWith("audio/")) {
+      return (
+        <audio controls className="h-12 w-12">
+          <source src={file.url} type={file.type} />
+        </audio>
+      );
+    }
+    return <div className="text-2xl">{getFileIcon(file.type)}</div>;
+  };
+
   return (
     <>
       <Card>
@@ -145,7 +174,7 @@ export function FileList({ files, isPro = false }: FileListProps) {
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="text-2xl">{getFileIcon(file.type)}</div>
+                    {renderFilePreview(file)}
                     <div>
                       <div className="font-medium">{file.name}</div>
                       <div className="text-xs text-muted-foreground">
