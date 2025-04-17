@@ -1,12 +1,6 @@
 type LogLevel = "info" | "warn" | "error";
 
 class Logger {
-  private isServer: boolean;
-
-  constructor() {
-    this.isServer = typeof window === "undefined";
-  }
-
   private formatLogMessage(
     level: LogLevel,
     message: string,
@@ -29,9 +23,7 @@ class Logger {
   ) {
     const formattedMessage = this.formatLogMessage(level, message, meta);
 
-    if (!this.isServer || process.env.NODE_ENV !== "production") {
-      console[level](formattedMessage);
-    }
+    console[level](formattedMessage);
 
     // TODO send logs to whaever logging service i decide to use (if i do) but prolly sentry
   }
