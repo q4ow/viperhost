@@ -27,7 +27,7 @@ export async function POST() {
   } catch (error) {
     logger.error("Create checkout session error", { error });
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { message: "Something went wrong.", error: error },
       { status: 500 },
     );
   }
