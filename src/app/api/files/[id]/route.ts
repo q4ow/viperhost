@@ -42,13 +42,18 @@ export async function DELETE(
     }
 
     const uploadsDir = path.join(process.cwd(), "uploads");
-    const ext = path.extname(file.name || "");
-    const filePath = path.join(uploadsDir, file.fileId + ext);
+    const fileDir = path.join(uploadsDir, file.fileId);
+    const filePath = path.join(fileDir, file.name);
 
     try {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         logger.info(`File deleted from filesystem: ${filePath}`);
+        const filesLeft = fs.readdirSync(fileDir);
+        if (filesLeft.length === 0) {
+          fs.rmdirSync(fileDir);
+          logger.info(`Directory deleted: ${fileDir}`);
+        }
       } else {
         logger.warn(`File not found on filesystem: ${filePath}`);
       }
