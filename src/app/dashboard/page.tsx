@@ -1,14 +1,11 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import type { ExtendedSession } from "@/lib/auth";
+"use client";
+
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { FileUploader } from "@/components/dashboard/FileUploader";
 import { FileList } from "@/components/dashboard/FileList";
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { SubscriptionStatus } from "@/components/dashboard/SubscriptionStatus";
-import { db } from "@/lib/db";
 import { useEffect, useState } from "react";
 
 interface FileType {
