@@ -51,6 +51,7 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         email,
         password,
+        callbackUrl: "/dashboard",
         redirect: false,
       });
 
@@ -58,7 +59,11 @@ export default function LoginPage() {
         throw new Error(result.error);
       }
 
-      router.push("/dashboard");
+      if (result?.url) {
+        router.push(result.url);
+      } else {
+        router.push("/dashboard");
+      }
       router.refresh();
     } catch {
       toast({

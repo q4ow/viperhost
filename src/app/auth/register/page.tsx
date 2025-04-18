@@ -60,10 +60,17 @@ export default function RegisterPage() {
       await signIn("credentials", {
         email,
         password,
+        callbackUrl: "/dashboard",
         redirect: false,
+      }).then((result) => {
+        if (result?.url) {
+          router.push(result.url);
+        } else {
+          router.push("/dashboard");
+        }
       });
 
-      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
       toast({
         title: "Error",
@@ -125,16 +132,16 @@ export default function RegisterPage() {
                 Or continue with
               </span>
             </div>
-          </div>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-          >
-            <Github className="mr-2 h-4 w-4" />
-            GitHub
-          </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+            >
+              <Github className="mr-2 h-4 w-4" />
+              GitHub
+            </Button>
+          </div>
         </CardContent>
         <CardFooter>
           <div className="text-sm text-muted-foreground">
