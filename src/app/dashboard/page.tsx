@@ -83,10 +83,15 @@ export default function DashboardPage() {
         <SubscriptionStatus isPro={isPro} />
         <DashboardTabs
           analyticsData={analyticsData}
-          user={user || { id: '', username: '', createdAt: new Date() }}
+          user={user || { id: "", username: "", createdAt: new Date() }}
           isPro={isPro}
+          isAdmin={user?.isadmin}
         >
-          <FileUploader userId={user?.id || ""} isPro={isPro} onUploadComplete={handleUploadComplete} />
+          <FileUploader
+            userId={user?.id || ""}
+            isPro={isPro}
+            onUploadComplete={handleUploadComplete}
+          />
           {loading ? (
             <div>Loading files...</div>
           ) : (

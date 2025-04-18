@@ -17,12 +17,18 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface SubscriptionStatusProps {
   isPro: boolean;
+  isAdmin?: boolean;
 }
 
-export function SubscriptionStatus({ isPro }: SubscriptionStatusProps) {
+export function SubscriptionStatus({
+  isPro,
+  isAdmin = false,
+}: SubscriptionStatusProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  const hasProFeatures = isPro || isAdmin;
 
   const handleSubscription = async () => {
     setIsLoading(true);
@@ -70,10 +76,10 @@ export function SubscriptionStatus({ isPro }: SubscriptionStatusProps) {
             <CardDescription>Manage your subscription plan</CardDescription>
           </div>
           <Badge
-            variant={isPro ? "default" : "outline"}
-            className={isPro ? "bg-primary" : ""}
+            variant={hasProFeatures ? "default" : "outline"}
+            className={hasProFeatures ? "bg-primary" : ""}
           >
-            {isPro ? "Pro" : "Free"}
+            {isAdmin ? "Admin" : hasProFeatures ? "Pro" : "Free"}
           </Badge>
         </div>
       </CardHeader>
@@ -81,42 +87,54 @@ export function SubscriptionStatus({ isPro }: SubscriptionStatusProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span>Storage</span>
-            <span className="font-medium">{isPro ? "50GB" : "5GB"}</span>
+            <span className="font-medium">
+              {hasProFeatures ? "50GB" : "5GB"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span>Max file size</span>
-            <span className="font-medium">{isPro ? "2GB" : "100MB"}</span>
+            <span className="font-medium">
+              {hasProFeatures ? "2GB" : "100MB"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span>Analytics</span>
-            <span className="font-medium">{isPro ? "Advanced" : "Basic"}</span>
+            <span className="font-medium">
+              {hasProFeatures ? "Advanced" : "Basic"}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span>Support</span>
             <span className="font-medium">
-              {isPro ? "Priority" : "Community"}
+              {hasProFeatures ? "Priority" : "Community"}
             </span>
           </div>
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={handleSubscription}
-          disabled={isLoading}
-          className="w-full"
-          variant={isPro ? "outline" : "default"}
-        >
-          {isLoading ? (
-            "Processing..."
-          ) : isPro ? (
-            "Cancel Subscription"
-          ) : (
-            <>
-              <Zap className="mr-2 h-4 w-4" />
-              Upgrade to Pro
-            </>
-          )}
-        </Button>
+        {isAdmin ? (
+          <Button disabled className="w-full" variant="outline">
+            Admin Access
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSubscription}
+            disabled={isLoading}
+            className="w-full"
+            variant={isPro ? "outline" : "default"}
+          >
+            {isLoading ? (
+              "Processing..."
+            ) : isPro ? (
+              "Cancel Subscription"
+            ) : (
+              <>
+                <Zap className="mr-2 h-4 w-4" />
+                Upgrade to Pro
+              </>
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

@@ -14,7 +14,11 @@ interface FileUploaderProps {
   onUploadComplete?: () => void;
 }
 
-export function FileUploader({ userId, isPro, onUploadComplete }: FileUploaderProps) {
+export function FileUploader({
+  userId,
+  isPro,
+  onUploadComplete,
+}: FileUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -119,8 +123,9 @@ export function FileUploader({ userId, isPro, onUploadComplete }: FileUploaderPr
       <CardContent className="p-6">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-primary bg-primary/10" : "border-border"
-            }`}
+          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+            isDragActive ? "border-primary bg-primary/10" : "border-border"
+          }`}
         >
           <input {...getInputProps()} />
           <div className="flex flex-col items-center justify-center gap-2">

@@ -214,7 +214,12 @@ export function SettingsTab({ user, isPro }: SettingsTabProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAvatarButtonClick}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAvatarButtonClick}
+                    >
                       Change Avatar
                     </Button>
                     <input

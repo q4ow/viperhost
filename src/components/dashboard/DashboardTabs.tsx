@@ -34,6 +34,7 @@ interface DashboardTabsProps {
   analyticsData: AnalyticsData;
   user: User;
   isPro: boolean;
+  isAdmin: boolean;
 }
 
 export function DashboardTabs({
@@ -41,6 +42,7 @@ export function DashboardTabs({
   analyticsData,
   user,
   isPro,
+  isAdmin,
 }: DashboardTabsProps) {
   return (
     <Tabs defaultValue="files" className="w-full">
@@ -53,7 +55,7 @@ export function DashboardTabs({
         {children}
       </TabsContent>
       <TabsContent value="analytics" className="space-y-4 pt-4">
-        <AnalyticsTab data={analyticsData} isPro={isPro} />
+        <AnalyticsTab data={analyticsData} isPro={isPro} isAdmin={isAdmin} />
       </TabsContent>
       <TabsContent value="settings" className="space-y-4 pt-4">
         <SettingsTab

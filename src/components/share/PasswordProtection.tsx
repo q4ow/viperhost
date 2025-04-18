@@ -21,11 +21,13 @@ import { useRouter } from "next/navigation";
 interface PasswordProtectionProps {
   shareId: string;
   fileName: string;
+  onSuccess?: () => void;
 }
 
 export function PasswordProtection({
   shareId,
   fileName,
+  onSuccess,
 }: PasswordProtectionProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +54,11 @@ export function PasswordProtection({
       const { token } = await response.json();
       sessionStorage.setItem(`share_access_${shareId}`, token);
 
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.replace(window.location.pathname);
+      }
     } catch (error) {
       toast({
         title: "Error",

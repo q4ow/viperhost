@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ViperHost - Blazingly Fast File Hosting",
-  description: "Open source, blazingly fast file hosting platform"
+  description: "Open source, blazingly fast file hosting platform",
 };
 
 export default function RootLayout({

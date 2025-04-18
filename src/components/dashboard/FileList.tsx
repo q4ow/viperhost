@@ -105,8 +105,8 @@ export function FileList({ files, isPro = false }: FileListProps) {
 
   const downloadFile = (url: string) => {
     const downloadUrl = new URL(url);
-    downloadUrl.searchParams.set('download', 'true');
-    window.open(downloadUrl.toString(), '_blank');
+    downloadUrl.searchParams.set("download", "true");
+    window.open(downloadUrl.toString(), "_blank");
   };
 
   const renderFilePreview = (file: FileData) => {

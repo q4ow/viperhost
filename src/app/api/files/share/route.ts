@@ -35,6 +35,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+    });
+
     const subscription = await db.subscription.findFirst({
       where: {
         userId: session.user.id,
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const isPro = !!subscription;
+    const isPro = !!subscription || !!user?.admin;
 
     if ((password || expiryDate) && !isPro) {
       return NextResponse.json(

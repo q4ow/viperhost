@@ -51,9 +51,10 @@ interface AnalyticsData {
 interface AnalyticsTabProps {
   data: AnalyticsData;
   isPro: boolean;
+  isAdmin: boolean;
 }
 
-export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
+export function AnalyticsTab({ data, isPro, isAdmin }: AnalyticsTabProps) {
   const [timeRange, setTimeRange] = useState("7d");
 
   const COLORS = [
@@ -219,7 +220,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
             </CardContent>
           </Card>
 
-          {isPro && (
+          {(isPro || isAdmin) && (
             <Card>
               <CardHeader>
                 <CardTitle>Popular Files</CardTitle>
@@ -350,7 +351,7 @@ export function AnalyticsTab({ data, isPro }: AnalyticsTabProps) {
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Plan</span>
                       <span className="font-medium">
-                        {isPro ? "Pro" : "Free"}
+                        {isAdmin ? "Admin" : isPro ? "Pro" : "Free"}
                       </span>
                     </div>
                   </div>

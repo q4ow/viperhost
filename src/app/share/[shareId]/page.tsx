@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { FilePreview } from "@/components/share/FilePreview";
-import { PasswordProtection } from "@/components/share/PasswordProtection";
 import { ExpiredLink } from "@/components/share/ExpiredLink";
 import { logger } from "@/lib/logger";
+import { ShareClient } from "@/components/share/ShareClient";
 
 interface SharePageProps {
   params: {
@@ -50,11 +49,12 @@ export default async function SharePage({ params }: SharePageProps) {
     fileId: shareLink.fileId,
   });
 
-  if (shareLink.password) {
-    return (
-      <PasswordProtection shareId={shareId} fileName={shareLink.file.name} />
-    );
-  }
-
-  return <FilePreview file={shareLink.file} shareId={shareId} />;
+  return (
+    <ShareClient
+      shareId={shareId}
+      file={shareLink.file}
+      fileName={shareLink.file.name}
+      passwordProtected={!!shareLink.password}
+    />
+  );
 }

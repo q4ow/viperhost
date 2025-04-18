@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       },
     });
 
-    const verificationToken = await db.verificationToken.create({
+    /* const verificationToken = await db.verificationToken.create({
       data: {
         identifier: email,
         token: await generateUUID(),
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       },
     });
 
-    await sendVerificationEmail(email, verificationToken.token);
+    await sendVerificationEmail(email, verificationToken.token); */
 
     logger.info(`User registered: ${email}`);
 
