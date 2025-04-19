@@ -7,7 +7,9 @@ import { logger } from "@/lib/logger";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, username } = await req.json();
+    const { email: rawEmail, password, username } = await req.json();
+
+    const email = rawEmail.toLowerCase();
 
     const existingUser = await db.user.findUnique({
       where: {

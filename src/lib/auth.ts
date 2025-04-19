@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
       const user = await db.user.create({
         data: {
           ...data,
+          email: data.email ? data.email.toLowerCase() : "",
           uuid: await generateUUID(),
         },
       });
@@ -96,9 +97,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        const normalizedEmail = credentials.email.toLowerCase();
+
         const user = await db.user.findUnique({
           where: {
-            email: credentials.email,
+            email: normalizedEmail,
           },
         });
 

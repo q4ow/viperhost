@@ -44,7 +44,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
+    const email = (formData.get("email") as string).toLowerCase();
     const password = formData.get("password") as string;
 
     try {

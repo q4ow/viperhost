@@ -31,7 +31,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
+    const email = (formData.get("email") as string).toLowerCase();
     const password = formData.get("password") as string;
     const username = formData.get("username") as string;
 
