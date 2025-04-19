@@ -80,12 +80,12 @@ export default function DashboardPage() {
         text="Manage your files and account settings."
       />
       <div className="grid gap-8">
-        <SubscriptionStatus isPro={isPro} />
+        <SubscriptionStatus isPro={isPro} isAdmin={user?.admin} />
         <DashboardTabs
           analyticsData={analyticsData}
           user={user || { id: "", username: "", createdAt: new Date() }}
           isPro={isPro}
-          isAdmin={user?.isadmin}
+          isAdmin={user?.admin}
         >
           <FileUploader
             userId={user?.id || ""}
