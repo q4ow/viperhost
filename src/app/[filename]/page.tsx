@@ -1,60 +1,85 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { ExpiredLink } from "@/components/share/ExpiredLink";
-import { logger } from "@/lib/logger";
-import { ShareClient } from "@/components/share/ShareClient";
+import { formatBytes } from "@/lib/utils";
+import { FilePreview } from "@/components/share/FilePreview";
 
-interface SharePageProps {
+interface FilePageProps {
   params: {
-    shareId: string;
+    filename: string;
   };
 }
 
-export default async function SharePage({ params }: SharePageProps) {
-  const { shareId } = params;
-
-  const shareLink = await db.shareLink.findUnique({
+export async function generateMetadata({
+  params,
+}: FilePageProps): Promise<Metadata> {
+  const file = await db.file.findFirst({
     where: {
-      shareId,
+      fileId: params.filename.split(".")[0],
     },
     include: {
-      file: true,
+      user: true,
     },
   });
 
-  if (!shareLink) {
+  if (!file) {
+    return {
+      title: "File Not Found",
+      description: "The requested file could not be found.",
+    };
+  }
+
+  const fileSize = formatBytes(file.size);
+  const fileType = file.type.split("/")[1]?.toUpperCase() || "File";
+
+  return {
+    title: file.name,
+    description: `${fileType} • ${fileSize}`,
+    openGraph: {
+      title: file.name,
+      description: `${fileType} • ${fileSize}`,
+      type: "website",
+      images: file.type.startsWith("image/")
+        ? [
+          {
+            url: file.rawUrl,
+            width: 1200,
+            height: 630,
+            alt: file.name,
+          },
+        ]
+        : [
+          {
+            url: "/placeholder.svg",
+            width: 1200,
+            height: 630,
+            alt: "File preview",
+          },
+        ],
+    },
+    twitter: {
+      card: file.type.startsWith("image/") ? "summary_large_image" : "summary",
+      title: file.name,
+      description: `${fileType} • ${fileSize}`,
+    },
+  };
+}
+
+export default async function FilePage({ params }: FilePageProps) {
+  const fileId = params.filename.split(".")[0];
+  const file = await db.file.findFirst({
+    where: {
+      fileId: fileId,
+    },
+  });
+
+  if (!file) {
     notFound();
   }
 
-  const isExpired =
-    shareLink.expiresAt && new Date(shareLink.expiresAt) < new Date();
-
-  if (isExpired) {
-    return <ExpiredLink />;
-  }
-
-  await db.shareLink.update({
-    where: {
-      id: shareLink.id,
-    },
-    data: {
-      views: {
-        increment: 1,
-      },
-    },
-  });
-
-  logger.info(`Shared file viewed: ${shareLink.fileId}`, {
-    shareId,
-    fileId: shareLink.fileId,
-  });
-
   return (
-    <ShareClient
-      shareId={shareId}
-      file={shareLink.file}
-      fileName={shareLink.file.name}
-      passwordProtected={!!shareLink.password}
-    />
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <FilePreview file={file} shareId={""} />
+    </div>
   );
 }
