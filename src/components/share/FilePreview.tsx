@@ -127,7 +127,7 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
   };
 
   return (
-    <div className="container py-10 mt-[15vh]">
+    <div className="container py-10 mt-[10vh]">
       <Card className="mx-auto max-w-3xl">
         <CardHeader>
           <CardTitle>{file.name}</CardTitle>
@@ -136,14 +136,10 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>{renderPreview()}</CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-center">
           <div className="text-sm text-muted-foreground">
             Shared via ViperHost
           </div>
-          <Button onClick={handleDownload} disabled={isDownloading}>
-            <Download className="mr-2 h-4 w-4" />
-            {isDownloading ? "Downloading..." : "Download"}
-          </Button>
         </CardFooter>
       </Card>
     </div>
