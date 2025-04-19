@@ -127,7 +127,7 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
   };
 
   return (
-    <div className="container py-10 mt-[10vh]">
+    <div className="container py-10 mt-[8vh]">
       <Card className="mx-auto max-w-3xl">
         <CardHeader>
           <CardTitle>{file.name}</CardTitle>
