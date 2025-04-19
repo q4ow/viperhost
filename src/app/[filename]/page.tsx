@@ -43,16 +43,12 @@ export async function generateMetadata({
         ? [
           {
             url: file.rawUrl,
-            width: 1200,
-            height: 630,
             alt: file.name,
           },
         ]
         : [
           {
             url: "/placeholder.svg",
-            width: 1200,
-            height: 630,
             alt: "File preview",
           },
         ],
