@@ -6,16 +6,16 @@ import { ShareClient } from "@/components/share/ShareClient";
 
 interface SharePageProps {
   params: {
-    shareId: string;
+    filename: string;
   };
 }
 
 export default async function SharePage({ params }: SharePageProps) {
-  const { shareId } = params;
+  const { filename } = params;
 
   const shareLink = await db.shareLink.findUnique({
     where: {
-      shareId,
+      shareId: filename,
     },
     include: {
       file: true,
@@ -45,13 +45,13 @@ export default async function SharePage({ params }: SharePageProps) {
   });
 
   logger.info(`Shared file viewed: ${shareLink.fileId}`, {
-    shareId,
+    shareId: filename,
     fileId: shareLink.fileId,
   });
 
   return (
     <ShareClient
-      shareId={shareId}
+      shareId={filename}
       file={shareLink.file}
       fileName={shareLink.file.name}
       passwordProtected={!!shareLink.password}
