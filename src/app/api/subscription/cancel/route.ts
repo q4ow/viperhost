@@ -28,24 +28,37 @@ export async function POST() {
       );
     }
 
-    await stripe.subscriptions.cancel(subscription.stripeSubscriptionId);
+    // Get the subscription details from Stripe to find the current period end
+    const stripeSubscription = await stripe.subscriptions.retrieve(
+      subscription.stripeSubscriptionId
+    );
 
+    // Cancel at period end to maintain access until billing cycle completes
+    await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+
+    // Update database with current period end
     await db.subscription.update({
       where: {
         id: subscription.id,
       },
       data: {
-        status: "canceled",
+        status: "active", // Keep as active until period ends
         canceledAt: new Date(),
+        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
       },
     });
 
     logger.info(`Subscription canceled for user: ${userId}`, {
       subscriptionId: subscription.stripeSubscriptionId,
+      currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
     });
 
     return NextResponse.json(
-      { message: "Subscription canceled successfully" },
+      {
+        message: "Subscription canceled successfully. You'll maintain access until the end of your billing period."
+      },
       { status: 200 },
     );
   } catch (error) {

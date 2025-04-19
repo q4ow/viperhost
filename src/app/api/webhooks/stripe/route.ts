@@ -35,34 +35,48 @@ export async function POST(req: Request) {
           throw new Error("User ID is required");
         }
 
+        // Retrieve the subscription details to get the current period end
+        const subscriptionId = session.subscription as string;
+        const subscriptionDetails = await stripe.subscriptions.retrieve(subscriptionId);
+
         await db.subscription.upsert({
           where: {
             userId,
           },
           update: {
             stripeCustomerId: session.customer as string,
-            stripeSubscriptionId: session.subscription as string,
+            stripeSubscriptionId: subscriptionId,
             stripePriceId: process.env.STRIPE_PRICE_ID as string,
             status: "active",
+            currentPeriodEnd: new Date(subscriptionDetails.current_period_end * 1000),
           },
           create: {
             userId,
             stripeCustomerId: session.customer as string,
-            stripeSubscriptionId: session.subscription as string,
+            stripeSubscriptionId: subscriptionId,
             stripePriceId: process.env.STRIPE_PRICE_ID as string,
             status: "active",
+            currentPeriodEnd: new Date(subscriptionDetails.current_period_end * 1000),
           },
         });
 
         logger.info(`Subscription created for user: ${userId}`, {
-          subscriptionId: session.subscription,
+          subscriptionId,
+          currentPeriodEnd: new Date(subscriptionDetails.current_period_end * 1000),
         });
         break;
       }
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = invoice.lines.data[0].subscription as string;
+        const subscriptionId = invoice.lines.data[0]?.subscription as string;
+
+        if (!subscriptionId) {
+          logger.warn("No subscription ID found in invoice", {
+            invoiceId: invoice.id,
+          });
+          break;
+        }
 
         const subscription = await db.subscription.findFirst({
           where: {
@@ -83,14 +97,27 @@ export async function POST(req: Request) {
 
           logger.info(`Subscription renewed: ${subscriptionId}`, {
             userId: subscription.userId,
+            currentPeriodEnd: new Date(invoice.period_end * 1000),
+          });
+        } else {
+          logger.warn(`Subscription not found for invoice: ${invoice.id}`, {
+            subscriptionId
           });
         }
         break;
       }
 
       case "customer.subscription.deleted": {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         const subscriptionId = subscription.id as string;
+
+        // Log more details about the deleted subscription
+        logger.info(`Processing subscription deletion`, {
+          subscriptionId,
+          status: subscription.status,
+          cancelAt: subscription.cancel_at ? new Date(subscription.cancel_at * 1000) : null,
+          canceledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
+        });
 
         await db.subscription.updateMany({
           where: {
@@ -99,10 +126,12 @@ export async function POST(req: Request) {
           data: {
             status: "canceled",
             canceledAt: new Date(),
+            // Make sure currentPeriodEnd is set to now, to immediately end Pro access
+            currentPeriodEnd: new Date(),
           },
         });
 
-        logger.info(`Subscription deleted: ${subscriptionId}`);
+        logger.info(`Subscription fully deleted: ${subscriptionId}`);
         break;
       }
 
