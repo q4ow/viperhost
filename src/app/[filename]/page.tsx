@@ -73,9 +73,17 @@ export default async function FilePage({ params }: FilePageProps) {
     notFound();
   }
 
+  // Create a direct download URL by appending ?download=true
+  const downloadUrl = `${file.rawUrl}?download=true`;
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
-      <FilePreview file={file} shareId={""} />
+      <FilePreview
+        file={file}
+        shareId={""}
+        downloadUrl={downloadUrl}
+        showDownloadButton={true}
+      />
     </div>
   );
 }

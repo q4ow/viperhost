@@ -32,9 +32,16 @@ interface FilePreviewProps {
     rawUrl: string;
   };
   shareId: string;
+  downloadUrl?: string;
+  showDownloadButton?: boolean;
 }
 
-export function FilePreview({ file, shareId }: FilePreviewProps) {
+export function FilePreview({
+  file,
+  shareId,
+  downloadUrl,
+  showDownloadButton = false
+}: FilePreviewProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
 
@@ -42,11 +49,18 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
     setIsDownloading(true);
 
     try {
-      await fetch(`/api/share/${shareId}/download`, {
-        method: "POST",
-      });
-
-      window.open(file.rawUrl, "_blank");
+      if (shareId) {
+        await fetch(`/api/share/${shareId}/download`, {
+          method: "POST",
+        });
+        window.open(file.rawUrl, "_blank");
+      } else if (downloadUrl) {
+        window.open(downloadUrl, "_blank");
+      } else {
+        const url = new URL(file.rawUrl);
+        url.searchParams.set("download", "true");
+        window.open(url.toString(), "_blank");
+      }
 
       toast({
         title: "Download started",
@@ -136,10 +150,21 @@ export function FilePreview({ file, shareId }: FilePreviewProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>{renderPreview()}</CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex justify-between items-center">
           <div className="text-sm text-muted-foreground">
             Shared via ViperHost
           </div>
+          {(shareId || showDownloadButton) && (
+            <Button
+              onClick={handleDownload}
+              disabled={isDownloading}
+              variant="outline"
+              size="sm"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {isDownloading ? "Downloading..." : "Download"}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>
