@@ -160,6 +160,7 @@ export function FilePreview({
               disabled={isDownloading}
               variant="outline"
               size="sm"
+              className="hover:bg-foreground/10"
             >
               <Download className="mr-2 h-4 w-4" />
               {isDownloading ? "Downloading..." : "Download"}
