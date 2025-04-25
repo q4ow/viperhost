@@ -1,3 +1,9 @@
+---
+title: "Building AnonHost's File Upload System"
+date: "2024-04-25"
+excerpt: "An in-depth technical look at how I built the file upload system powering AnonHost, covering architecture decisions, challenges, and lessons learned."
+---
+
 As the solo developer of [AnonHost](https://anon.love), I wanted to share an in-depth look at how I built the file upload system that powers the platform. This post details the technical challenges I faced and the solutions I developed to create a reliable, user-friendly upload experience.
 ## Initial Requirements
 

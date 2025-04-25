@@ -10,6 +10,20 @@ import { getBlogPosts } from "@/lib/blog";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return "Invalid date";
+    }
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch (error) {
+    console.error(`Error formatting date: ${dateString}`, error);
+    return "Date unavailable";
+  }
+};
+
 export default async function BlogPage() {
   const posts = await getBlogPosts();
 
@@ -44,9 +58,7 @@ export default async function BlogPage() {
                     </Link>
                   </CardTitle>
                   <CardDescription>
-                    {formatDistanceToNow(new Date(post.date), {
-                      addSuffix: true,
-                    })}
+                    {formatDate(post.date)}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
