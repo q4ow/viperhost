@@ -3,5 +3,8 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - bcrypt
   - esbuild
+  - eslint-js
   - prisma
   - sharp
+  - sqlite3
+  - unrs-resolver
