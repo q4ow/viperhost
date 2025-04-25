@@ -1,6 +1,6 @@
 ---
 title: "Building AnonHost's File Upload System"
-date: "2024-04-25"
+date: "2025-04-25"
 excerpt: "An in-depth technical look at how I built the file upload system powering AnonHost, covering architecture decisions, challenges, and lessons learned."
 ---
 
